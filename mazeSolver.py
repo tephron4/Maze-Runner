@@ -51,15 +51,6 @@ class Maze:
         for i in range(self.rows):
             for j in range(self.cols):
                 self.spaces[i][j].draw(win, self.rows, self.cols)
-                
-    def drawSolution(self, win):
-        horizontalGap = self.width / self.cols
-        verticalGap = self.height / self.rows
-        
-        for i in range(len(self.solution)):
-            pygame.draw.rect(win, (0,120,0), (self.solution[i][1],self.solution[i][0],horizontalGap,verticalGap))
-            time.sleep(2)
-            
 
     # Function for solving the maze using DFS
     def solve(self):
@@ -78,32 +69,40 @@ class Maze:
     def dfs(self, end, cur):
         self.update_model()
 
+        # Check to see if we got to the end
         if(cur == end):
             # print("(" + str(cur.col) + "," + str(cur.row) + ")")
             self.solution.append([cur.row, cur.col])
             return True
         
+        # Set the proper values for the current space
         cur.visited = True
         cur.inPath = True
+        # Update the display of the space (visited and on current/correct path)
         cur.draw_change(self.win, self.rows, self.cols)
         self.update_model()
         pygame.display.update()
-        print('Delaying time')
+        
+        # Cause a time delay to create an animated look
         pygame.time.delay(100)
 
+        # Get unvisited neighbors
         neighbors = cur.getUnvisitedNeighbors(self.spaces)
 
+        # DFS part: checking if going through each neighbor provides a solution
         for n in neighbors:
             if self.dfs(end, n):
                 # print("(" + str(cur.col) + "," + str(cur.row) + ")")
                 self.solution.append([cur.row, cur.col])
                 return True
         
+        # Update display of the space (visited but not on current/correct path)
         cur.inPath = False
         self.update_model()
         cur.draw_change(self.win, self.rows, self.cols)
         pygame.display.update()
-        print('Delaying time 2')
+        
+        # Cause a time delay to create an animated look
         pygame.time.delay(100)
 
         return False
@@ -203,11 +202,16 @@ def main():
                         print()
                         run = False
                         break
+                    else:
+                        print()
+                        print('Maze Cannot be Solved')
+                        run = False
+                        break
         
-        if(not len(maze.solution) > 0):
+        if(run):
             redraw_window(win, maze)
             pygame.display.update()            
 
 main()
-pygame.time.delay(7500)
+pygame.time.delay(5000)
 pygame.quit()
