@@ -1,6 +1,5 @@
 from numpy import true_divide
 import pygame
-import time
 
 # Maze Class
 class Maze:
@@ -192,7 +191,9 @@ def main():
                 run = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
+                    # Solve the maze
                     maze.solve()
+                    # Check if the maze was solvable & solved
                     if len(maze.solution) > 0:
                         maze.solution.reverse()
                         # maze.drawSolution(win)
