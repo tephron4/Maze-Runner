@@ -1,2 +1,3 @@
 # Maze-Runner
-Program that will solve given maze.
+
+Program that will solve a given maze.
