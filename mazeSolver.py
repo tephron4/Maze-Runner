@@ -1,5 +1,6 @@
 from numpy import true_divide
 import pygame
+import time
 
 # Maze Class
 class Maze:
@@ -38,18 +39,27 @@ class Maze:
 
     # Function for drawing the maze
     def draw(self, win):
-        horizontalGap = self.width / self.cols
-        verticalGap = self.width / self.rows
+        ## horizontalGap = self.width / self.cols
+        ## verticalGap = self.width / self.rows
         # Draw Grid Lines
-        for i in range(self.rows+1):
-            thick = 1
-            pygame.draw.line(win, (255,0,255), (0, i*horizontalGap), (self.width, i*horizontalGap), thick)
-            pygame.draw.line(win, (255,0,255), (i*verticalGap, 0), (i*verticalGap, self.height), thick)
+        ## for i in range(self.rows+1):
+        ##     thick = 1
+        ##     pygame.draw.line(win, (255,0,255), (0, i*verticalGap), (self.width, i*verticalGap), thick)
+        ##     pygame.draw.line(win, (255,0,255), (i*horizontalGap, 0), (i*horizontalGap, self.height), thick)
 
         # Draw Spaces
         for i in range(self.rows):
             for j in range(self.cols):
                 self.spaces[i][j].draw(win, self.rows, self.cols)
+                
+    def drawSolution(self, win):
+        horizontalGap = self.width / self.cols
+        verticalGap = self.height / self.rows
+        
+        for i in range(len(self.solution)):
+            pygame.draw.rect(win, (0,120,0), (self.solution[i][1],self.solution[i][0],horizontalGap,verticalGap))
+            time.sleep(2)
+            
 
     # Function for solving the maze using DFS
     def solve(self):
@@ -77,6 +87,9 @@ class Maze:
         cur.inPath = True
         cur.draw_change(self.win, self.rows, self.cols)
         self.update_model()
+        pygame.display.update()
+        print('Delaying time')
+        pygame.time.delay(100)
 
         neighbors = cur.getUnvisitedNeighbors(self.spaces)
 
@@ -90,6 +103,8 @@ class Maze:
         self.update_model()
         cur.draw_change(self.win, self.rows, self.cols)
         pygame.display.update()
+        print('Delaying time 2')
+        pygame.time.delay(100)
 
         return False
 
@@ -118,13 +133,13 @@ class Space:
 
         # Draw space
         if self.isStart:
-            pygame.draw.rect(win, (0,255,0), (x,y,horizontalGap,verticalGap), 3)
+            pygame.draw.rect(win, (0,255,0), (x,y,horizontalGap,verticalGap))
         elif self.isEnd:
-            pygame.draw.rect(win, (255,0,0), (x,y,horizontalGap,verticalGap), 3)
+            pygame.draw.rect(win, (255,0,0), (x,y,horizontalGap,verticalGap))
         elif self.type == 'X': # Wall
-            pygame.draw.rect(win, (255,255,255), (x,y,horizontalGap,verticalGap), 3) # <=== Change last value (width) if needed
+            pygame.draw.rect(win, (255,255,255), (x,y,horizontalGap,verticalGap)) # <=== Change last value (width) if needed
         elif self.type == 'O':
-            pygame.draw.rect(win, (0,0,180), (x,y,horizontalGap,verticalGap), 3)
+            pygame.draw.rect(win, (0,0,180), (x,y,horizontalGap,verticalGap))
 
     # Function for drawing a change in the space
     def draw_change(self, win, rows, cols):
@@ -133,12 +148,12 @@ class Space:
         x = self.col * horizontalGap
         y = self.row * verticalGap
 
-        pygame.draw.rect(win, (255,255,255), (x,y,horizontalGap,verticalGap), 0)
+        ## pygame.draw.rect(win, (255,255,255), (x,y,horizontalGap,verticalGap))
 
         if self.inPath:
-            pygame.draw.rect(win, (0,120,0), (x,y,horizontalGap,verticalGap), 3)
+            pygame.draw.rect(win, (0,120,0), (x,y,horizontalGap,verticalGap))
         else:
-            pygame.draw.rect(win, (120,0,0), (x,y,horizontalGap,verticalGap), 3)
+            pygame.draw.rect(win, (120,0,0), (x,y,horizontalGap,verticalGap))
 
     # Function for getting the unvisited neighbors of a space
     def getUnvisitedNeighbors(self, spaces):
@@ -181,14 +196,18 @@ def main():
                     maze.solve()
                     if len(maze.solution) > 0:
                         maze.solution.reverse()
+                        # maze.drawSolution(win)
                         print()
                         print('Solution: ')
                         print(maze.solution)
                         print()
-                    run = False
+                        run = False
+                        break
         
-        redraw_window(win, maze)
-        pygame.display.update()
+        if(not len(maze.solution) > 0):
+            redraw_window(win, maze)
+            pygame.display.update()            
 
-main()   
+main()
+pygame.time.delay(7500)
 pygame.quit()
